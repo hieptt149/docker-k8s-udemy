@@ -3,6 +3,8 @@ name: Deploy React App with Docker
 on:
   push:
     branches: [develop]
+  pull_request:
+    branches: [develop]
 
 jobs:
   build:
@@ -28,6 +30,7 @@ jobs:
         run: zip -r deployment-package.zip . -x '*.git*'
       
       - name: Deploy to EBS
+        if: github.event_name == 'push'
         uses: einaregilsson/beanstalk-deploy@v20
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
