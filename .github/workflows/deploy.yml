@@ -23,3 +23,19 @@ jobs:
 
       - name: Run image and test
         run: docker run -e CI=true hieptt149/react-app-test npm test
+      
+      - name: Generate deployment package
+        run: zip -r deployment-package.zip . -x '*.git*'
+      
+      - name: Deploy to EBS
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: docker-udemy-react
+          environment_name: Docker-udemy-react-env
+          version_label: ${{ github.sha }}
+          region: ap-southeast-1
+          zip_file: deployment-package.zip
+          deployment_package: deployment-package.zip
+          existing_bucket_name: elasticbeanstalk-ap-southeast-1-058264109367
